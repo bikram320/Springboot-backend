@@ -3,7 +3,7 @@ package com.example.spring_api_starter.controllers;
 import com.example.spring_api_starter.dtos.UserDto;
 import com.example.spring_api_starter.entities.User;
 
-import com.example.spring_api_starter.mapper.UserMapper;
+
 import com.example.spring_api_starter.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -20,7 +20,7 @@ import java.util.Set;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+
 
     @GetMapping
     public Iterable<UserDto> getUsers(@RequestParam(required = false , defaultValue = "" ,name = "sort") String sortBy) {
@@ -29,7 +29,7 @@ public class UserController {
             sortBy = "name";
         return userRepository.findAll(Sort.by(sortBy))
                 .stream()
-                .map(userMapper::toUserDto)
+                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
                 .toList();
 
     }
@@ -39,6 +39,7 @@ public class UserController {
         if (user == null){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(userMapper.toUserDto(user));
+        var userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
+        return ResponseEntity.ok(userDto);
     }
 }
