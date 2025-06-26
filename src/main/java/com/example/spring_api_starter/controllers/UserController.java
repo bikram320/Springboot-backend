@@ -46,4 +46,13 @@ public class UserController {
         var userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
         return ResponseEntity.ok(userDto);
     }
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        if(user.getId() == null)
+            return ResponseEntity.badRequest().build();
+
+        var users =  userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(users);
+    }
+
 }
