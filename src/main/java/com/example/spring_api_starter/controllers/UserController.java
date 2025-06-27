@@ -1,5 +1,6 @@
 package com.example.spring_api_starter.controllers;
 
+import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
 import com.example.spring_api_starter.entities.User;
 
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Set;
 
@@ -47,12 +49,18 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        if(user.getId() == null)
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<UserDto> createUser(
+            @RequestBody RegisterUserRequest request,
+            UriComponentsBuilder uriBuilder) {
+        User newUser = new User();
+        newUser.setName(request.getName());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(request.getPassword());
+        userRepository.save(newUser);
 
-        var users =  userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(users);
+        UserDto userDto = new UserDto(newUser.getId(), newUser.getName(), newUser.getEmail());
+        var uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(userDto);
     }
 
 }
