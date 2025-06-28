@@ -34,6 +34,9 @@ public class User {
     @Builder.Default
     private List<Address> addresses = new ArrayList<>();
 
+    public User(String name, String email, String password) {
+    }
+
 
     public void addAddress(Address address) {
         addresses.add(address);
