@@ -3,6 +3,7 @@ package com.example.spring_api_starter.controllers;
 
 import com.example.spring_api_starter.dtos.ProductDto;
 import com.example.spring_api_starter.entities.Product;
+import com.example.spring_api_starter.mapper.ProductMapper;
 import com.example.spring_api_starter.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +17,16 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     @GetMapping
     public Iterable<ProductDto> fetchAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(product ->
-                        new ProductDto(product.getId(), product.getName(), product.getDescription(),product.getPrice(),product.getCategory().getId()))
+                .map(productMapper::toProductDto)
                 .toList();
     }
-    @GetMapping("/categoryId{categoryId}")
+    @GetMapping("/categoryId/{categoryId}")
     public Iterable<ProductDto> fetchProductsByCategory(@RequestParam(name = "categoryId" , required = false) Byte categoryId) {
 
         List<Product> products;
@@ -34,7 +35,7 @@ public class ProductController {
         }else{
             products=productRepository.findAllWithCategory();
         }
-        return products.stream().map(product ->new ProductDto(product.getId(), product.getName(), product.getDescription(),product.getPrice(),product.getCategory().getId()))
+        return products.stream().map(productMapper::toProductDto)
                 .toList();
 
     }
