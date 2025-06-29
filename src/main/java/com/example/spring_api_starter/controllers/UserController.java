@@ -66,12 +66,21 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         var user = userRepository.findById(id).orElse(null);
-        if (user == null) {
+        if (user == null) {store_api
             return ResponseEntity.notFound().build();
         }
         userMapper.updateUser(request, user);
         userRepository.save(user);
         return ResponseEntity.ok(userMapper.toUserDto(user));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.delete(user);
+        return ResponseEntity.noContent().build();
     }
 
 }
