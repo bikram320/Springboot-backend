@@ -1,11 +1,9 @@
 package com.example.spring_api_starter.controllers;
 
+import com.example.spring_api_starter.dtos.ChangeUserPasswordRequest;
 import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
-import com.example.spring_api_starter.entities.User;
-
-
 import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -29,7 +27,7 @@ public class UserController {
 
     @GetMapping
     public Iterable<UserDto> getUsers(
-            @RequestHeader (required = false , name = "x-auth-token")  String token,
+            @RequestHeader(required = false , name = "x-auth-token")  String token,
             @RequestParam(required = false , defaultValue = "" ,name = "sort") String sortBy) {
 
         System.out.println(token);
@@ -66,7 +64,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         var user = userRepository.findById(id).orElse(null);
-        if (user == null) {store_api
+        if (user == null) {
             return ResponseEntity.notFound().build();
         }
         userMapper.updateUser(request, user);
@@ -80,6 +78,22 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         userRepository.delete(user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable long id , @RequestBody ChangeUserPasswordRequest request)
+    {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if(!user.getPassword().equals(request.getOldPassword())){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        user.setPassword(request.getNewPassword());
+        userRepository.save(user);
         return ResponseEntity.noContent().build();
     }
 
