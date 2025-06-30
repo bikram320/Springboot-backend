@@ -1,5 +1,6 @@
 package com.example.spring_api_starter.mapper;
 
+import com.example.spring_api_starter.dtos.ProductDto;
 import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
@@ -11,5 +12,5 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     UserDto toUserDto(User user);
     User toUser(RegisterUserRequest request);
-    void updateUser(UpdateUserRequest request ,@MappingTarget User user);
+    void updateUser(UpdateUserRequest request , @MappingTarget User user);
 }

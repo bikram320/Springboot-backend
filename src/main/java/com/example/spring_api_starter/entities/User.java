@@ -35,8 +35,10 @@ public class User {
     private List<Address> addresses = new ArrayList<>();
 
     public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
-
 
     public void addAddress(Address address) {
         addresses.add(address);
