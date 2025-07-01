@@ -8,13 +8,13 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-//
-//    @Mapping(source ="category.id",target = "categoryId")
-//    ProductDto toProductDto(Product product);
-//
-//    Product toProduct(ProductDto productDto);
-//
-//    @Mapping(target = "id", ignore = true)
-//    void updateProduct(ProductDto productDto, @MappingTarget Product product);
+
+    @Mapping(source ="category.id",target = "categoryId")
+    ProductDto toProductDto(Product product);
+
+    Product toProduct(ProductDto productDto );
+
+    @Mapping(target = "id", ignore = true)
+    void updateProduct(ProductDto productDto, @MappingTarget Product product);
 
 }
