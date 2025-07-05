@@ -6,6 +6,7 @@ import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
 import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,7 @@ public class UserController {
     }
     @PostMapping
     public ResponseEntity<UserDto> createUser(
+            @Valid
             @RequestBody RegisterUserRequest request,
             UriComponentsBuilder uriBuilder) {
         var newUser = userMapper.toUser(request);
@@ -81,7 +83,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/change-password")
+    @PostMapping("/change-password/{id}")
     public ResponseEntity<Void> changePassword(
             @PathVariable long id , @RequestBody ChangeUserPasswordRequest request)
     {

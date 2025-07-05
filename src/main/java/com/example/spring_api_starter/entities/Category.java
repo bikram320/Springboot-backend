@@ -32,4 +32,12 @@ public class Category {
     public Category(byte id) {
         this.id = id;
     }
+
+    public Byte getId() {
+        return id;
+    }
+
+    public void setId(Byte id) {
+        this.id = id;
+    }
 }
