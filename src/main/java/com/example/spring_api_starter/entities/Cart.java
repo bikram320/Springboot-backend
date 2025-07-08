@@ -20,7 +20,7 @@ public class Cart {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "`created date`")
+    @Column(name = "created_date" , insertable = false, updatable = false)
     private LocalDate createdDate;
 
     @OneToMany(mappedBy = "cart")
