@@ -11,6 +11,8 @@ import org.mapstruct.Mapping;
 public interface CartMapper {
 
 //    @Mapping(source="id" , target = "id")
+    @Mapping(target = "items" , source = "items")
+    @Mapping(target ="totalPrice" , expression = "java(cart.getTotalPrice())")
     CartDto toCartDto(Cart cart);
 
     @Mapping(source = "product", target = "product")
