@@ -4,7 +4,6 @@ import com.example.spring_api_starter.dtos.AddItemToCartRequest;
 import com.example.spring_api_starter.dtos.CartDto;
 import com.example.spring_api_starter.dtos.UpdateCartItemRequest;
 import com.example.spring_api_starter.entities.Cart;
-import com.example.spring_api_starter.entities.CartItem;
 import com.example.spring_api_starter.mapper.CartMapper;
 import com.example.spring_api_starter.repositories.CartRepository;
 import com.example.spring_api_starter.repositories.ProductRepository;
@@ -119,5 +118,18 @@ public class CartController {
         cartRepository.save(cart);
         return ResponseEntity.noContent().build();
 
+    }
+
+    @DeleteMapping("/{cartId}/items")
+    public ResponseEntity<?> clearCart(@PathVariable UUID cartId) {
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
+        if (cart == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("message", "Cart not found")
+            );
+        }
+        cart.clear();
+        cartRepository.save(cart);
+        return ResponseEntity.noContent().build();
     }
 }
