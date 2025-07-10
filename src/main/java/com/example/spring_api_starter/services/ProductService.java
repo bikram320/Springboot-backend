@@ -2,6 +2,7 @@ package com.example.spring_api_starter.services;
 
 import com.example.spring_api_starter.dtos.ProductDto;
 import com.example.spring_api_starter.entities.Product;
+import com.example.spring_api_starter.exceptions.ResourceNotFoundException;
 import com.example.spring_api_starter.mapper.ProductMapper;
 import com.example.spring_api_starter.repositories.CategoryRepository;
 import com.example.spring_api_starter.repositories.ProductRepository;
@@ -29,9 +30,35 @@ public class ProductService {
         if (categoryId != null) {
             products=productRepository.findByCategoryId(categoryId);
         }else{
-            products=productRepository.findAllWithCategory();
+            throw new ResourceNotFoundException("Category id not found"+categoryId);
         }
         return products.stream().map(productMapper::toProductDto)
                 .toList();
     }
+    public ProductDto createProduct(ProductDto productDto) {
+        var category = categoryRepository.findById(productDto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        var product = productMapper.toProduct(productDto);
+        product.setCategory(category);
+        productRepository.save(product);
+        productDto.setId(product.getId());
+        return productMapper.toProductDto(product);
+    }
+
+    public ProductDto updateProduct(ProductDto productDto, long id) {
+        var product = productRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        productMapper.updateProduct(productDto,product);
+        productRepository.save(product);
+        return productMapper.toProductDto(product);
+    }
+
+    public void deleteProduct(long id) {
+        var product = productRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        productRepository.delete(product);
+    }
+
 }

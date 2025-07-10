@@ -4,7 +4,6 @@ import com.example.spring_api_starter.dtos.ChangeUserPasswordRequest;
 import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.services.UserService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
