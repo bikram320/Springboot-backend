@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+
+    @Mapping(source = "id" , target = "id")
     UserDto toUserDto(User user);
 
 

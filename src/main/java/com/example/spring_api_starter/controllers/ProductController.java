@@ -6,6 +6,7 @@ import com.example.spring_api_starter.entities.Product;
 import com.example.spring_api_starter.mapper.ProductMapper;
 import com.example.spring_api_starter.repositories.CategoryRepository;
 import com.example.spring_api_starter.repositories.ProductRepository;
+import com.example.spring_api_starter.services.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,25 +24,15 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final ProductService productService;
 
     @GetMapping
     public Iterable<ProductDto> fetchAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toProductDto)
-                .toList();
+        return productService.fetchAll();
     }
     @GetMapping("/categoryId")
     public Iterable<ProductDto> fetchProductsByCategory(@RequestParam(name = "categoryId" , required = false) Byte categoryId) {
-
-        List<Product> products;
-        if (categoryId != null) {
-            products=productRepository.findByCategoryId(categoryId);
-        }else{
-            products=productRepository.findAllWithCategory();
-        }
-        return products.stream().map(productMapper::toProductDto)
-                .toList();
+        return productService.fetchByCategoryId(categoryId);
 
     }
     @PostMapping
