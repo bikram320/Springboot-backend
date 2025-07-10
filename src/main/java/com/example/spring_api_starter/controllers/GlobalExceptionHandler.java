@@ -1,5 +1,8 @@
 package com.example.spring_api_starter.controllers;
 
+import com.example.spring_api_starter.exceptions.DuplicateDataException;
+import com.example.spring_api_starter.exceptions.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,6 +23,20 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleResourceNotFound(ResourceNotFoundException exception) {
+        var errors = new HashMap<String, String>();
+        errors.put("message", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+
+    @ExceptionHandler(DuplicateDataException.class)
+    public ResponseEntity<Map<String,String>> handleDuplicateDataException(DuplicateDataException exception) {
+        var errors = new HashMap<String, String>();
+        errors.put("message", exception.getMessage());
         return ResponseEntity.badRequest().body(errors);
     }
 }

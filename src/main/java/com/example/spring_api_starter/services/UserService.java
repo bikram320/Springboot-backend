@@ -4,16 +4,15 @@ import com.example.spring_api_starter.dtos.ChangeUserPasswordRequest;
 import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
+import com.example.spring_api_starter.exceptions.DuplicateDataException;
+import com.example.spring_api_starter.exceptions.ResourceNotFoundException;
 import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
+import java.util.InputMismatchException;
 
 @Service
 @AllArgsConstructor
@@ -29,58 +28,46 @@ public class UserService {
                 .toList();
     }
 
-    public ResponseEntity<?> getUserById(Long id){
-        var user= userRepository.findById(id).orElse(null);
-        if (user == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userMapper.toUserDto(user), HttpStatus.OK);
+    public UserDto getUserById(Long id){
+        var user= userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("User not found by given data :"+id));
+
+        return userMapper.toUserDto(user);
 
     }
 
-    public ResponseEntity<?> createUser(@Valid RegisterUserRequest request , UriComponentsBuilder uriBuilder){
+    public UserDto createUser(@Valid RegisterUserRequest request ){
         if (userRepository.existsByEmail(request.getEmail())){
-            return ResponseEntity.badRequest().body(
-                    Map.of("email","email is already registered")
-            );
+           throw  new DuplicateDataException("Email is Already Registered "+request.getEmail());
         }
         var newUser = userMapper.toUser(request);
         userRepository.save(newUser);
 
-        UserDto userDto = userMapper.toUserDto(newUser);
-        var uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getId()).toUri();
-        return ResponseEntity.created(uri).body(userDto);
+        return userMapper.toUserDto(newUser);
+
     }
 
-    public ResponseEntity<?> updateUser(@Valid UpdateUserRequest request , long id){
-        var user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public UserDto updateUser(@Valid UpdateUserRequest request , long id){
+        var user = userRepository.findById(id)
+                        .orElseThrow(()-> new ResourceNotFoundException("User not found by given data :"+id));
         userMapper.updateUser(request, user);
         userRepository.save(user);
-        return ResponseEntity.ok(userMapper.toUserDto(user));
+        return  userMapper.toUserDto(user);
     }
 
-    public ResponseEntity<?> deleteUserById(Long id){
-        var user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public void deleteUserById(Long id){
+        var user = userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("User not found by given data :"+id));
         userRepository.delete(user);
-        return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<?> changePassword(Long id , ChangeUserPasswordRequest request){
-        var user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public void changePassword(Long id , ChangeUserPasswordRequest request){
+        var user = userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("User not found by given data :"+id));
         if(!user.getPassword().equals(request.getOldPassword())){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new InputMismatchException("Old password does not match");
         }
         user.setPassword(request.getNewPassword());
         userRepository.save(user);
-        return ResponseEntity.noContent().build();
     }
 }
