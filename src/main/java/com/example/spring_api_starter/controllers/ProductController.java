@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
+
 
 
 @RestController
@@ -22,9 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductController {
 
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
-    private final CategoryRepository categoryRepository;
     private final ProductService productService;
 
     @GetMapping
