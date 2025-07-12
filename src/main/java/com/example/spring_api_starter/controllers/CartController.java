@@ -31,7 +31,7 @@ public class CartController {
 
     @PostMapping("/{cartId}/items")
     public ResponseEntity<?> addToCart(
-            @PathVariable UUID cartId,@RequestBody AddItemToCartRequest request) {
+            @PathVariable UUID cartId,@Valid @RequestBody AddItemToCartRequest request) {
 
         var cartDto = cartService.addToCart(request, cartId);
         return ResponseEntity.ok(cartDto);

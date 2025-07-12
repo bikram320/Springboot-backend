@@ -36,7 +36,7 @@ public class UserService {
 
     }
 
-    public UserDto createUser(@Valid RegisterUserRequest request ){
+    public UserDto createUser(RegisterUserRequest request ){
         if (userRepository.existsByEmail(request.getEmail())){
            throw  new DuplicateDataException("Email is Already Registered "+request.getEmail());
         }
