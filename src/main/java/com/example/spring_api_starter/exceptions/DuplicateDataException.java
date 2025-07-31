@@ -1,6 +1,5 @@
 package com.example.spring_api_starter.exceptions;
 
-import com.example.spring_api_starter.dtos.UserDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 

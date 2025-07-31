@@ -2,10 +2,6 @@ package com.example.spring_api_starter.controllers;
 
 
 import com.example.spring_api_starter.dtos.ProductDto;
-import com.example.spring_api_starter.entities.Product;
-import com.example.spring_api_starter.mapper.ProductMapper;
-import com.example.spring_api_starter.repositories.CategoryRepository;
-import com.example.spring_api_starter.repositories.ProductRepository;
 import com.example.spring_api_starter.services.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
