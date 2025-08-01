@@ -10,18 +10,38 @@ import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.InputMismatchException;
 
 @Service
 @AllArgsConstructor
-public class UserService {
+public class UserService  implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+//    private final @Lazy PasswordEncoder passwordEncoder;
+
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        var user =userRepository.findByEmail(email).orElseThrow(() ->
+                new UsernameNotFoundException("user Not Found"));
+
+        return new User(
+                user.getEmail(),
+                user.getPassword(),
+                Collections.emptyList()
+        );
+    }
 
     public Iterable<UserDto> getUsers(){
         return userRepository.findAll(/*Sort.by(sortBy)*/)
@@ -45,7 +65,7 @@ public class UserService {
 
 
         var newUser = userMapper.toUser(request);
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+//        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
 
         return userMapper.toUserDto(newUser);
