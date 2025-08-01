@@ -10,6 +10,7 @@ import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.InputMismatchException;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public Iterable<UserDto> getUsers(){
         return userRepository.findAll(/*Sort.by(sortBy)*/)
@@ -40,7 +42,10 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())){
            throw  new DuplicateDataException("Email is Already Registered "+request.getEmail());
         }
+
+
         var newUser = userMapper.toUser(request);
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
 
         return userMapper.toUserDto(newUser);
