@@ -10,13 +10,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CartMapper {
 
-    @Mapping(source="id" , target = "id")
-    @Mapping(target = "items" , source = "items")
-    @Mapping(target ="totalPrice" , expression = "java(cart.getTotalPrice())")
+//    @Mapping(source="id" , target = "id")
+//    @Mapping(target = "items" , source = "items")
+//    @Mapping(target ="totalPrice" , expression = "java(cart.getTotalPrice())")
     CartDto toCartDto(Cart cart);
 
-    @Mapping(source = "product", target = "product")
-    @Mapping(source = "quantity", target = "quantity")
-    @Mapping(target = "totalPrice" ,expression = "java(cartItem.getTotalPrice())")
+//    @Mapping(source = "product", target = "product")
+//    @Mapping(source = "quantity", target = "quantity")
+//    @Mapping(target = "totalPrice" ,expression = "java(cartItem.getTotalPrice())")
     CartItemDto toCartDto(CartItem cartItem);
 }

@@ -16,9 +16,9 @@ public interface UserMapper {
     UserDto toUserDto(User user);
 
 
-    @Mapping(source="name",target = "name")
-    @Mapping(source="email",target = "email")
-    @Mapping(source = "password",target="password")
+//    @Mapping(source="name",target = "name")
+//    @Mapping(source="email",target = "email")
+//    @Mapping(source = "password",target="password")
     User toUser(RegisterUserRequest request);
     void updateUser(UpdateUserRequest request , @MappingTarget User user);
 }
