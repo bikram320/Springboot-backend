@@ -6,6 +6,8 @@ import com.example.spring_api_starter.entities.User;
 import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import com.example.spring_api_starter.services.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +29,10 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request){
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response
+    ){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -35,8 +40,17 @@ public class AuthController {
                 )
         );
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var token =jwtService.generateToken(user);
-        return ResponseEntity.ok(new JwtResponse(token));
+        var accessToken =jwtService.generateAccessToken(user);
+        var refreshToken =jwtService.generateRefreshToken(user);
+
+        var cookie = new Cookie("Refresh", refreshToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(604800);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken));
     }
 
     @PostMapping("/validate")
