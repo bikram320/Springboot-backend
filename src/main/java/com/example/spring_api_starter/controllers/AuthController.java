@@ -2,6 +2,7 @@ package com.example.spring_api_starter.controllers;
 
 import com.example.spring_api_starter.dtos.JwtResponse;
 import com.example.spring_api_starter.dtos.LoginRequest;
+import com.example.spring_api_starter.entities.User;
 import com.example.spring_api_starter.mapper.UserMapper;
 import com.example.spring_api_starter.repositories.UserRepository;
 import com.example.spring_api_starter.services.JwtService;
@@ -33,7 +34,8 @@ public class AuthController {
                         request.getPassword()
                 )
         );
-        var token =jwtService.generateToken(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var token =jwtService.generateToken(user);
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
@@ -47,9 +49,9 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> me(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var email =(String) authentication.getPrincipal();
+        var userId =(Long) authentication.getPrincipal();
 
-        var user = userRepository.findByEmail(email).orElse(null);
+        var user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
