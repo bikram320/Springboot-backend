@@ -1,5 +1,6 @@
 package com.example.spring_api_starter.controllers;
 
+import com.example.spring_api_starter.config.JwtConfig;
 import com.example.spring_api_starter.dtos.JwtResponse;
 import com.example.spring_api_starter.dtos.LoginRequest;
 import com.example.spring_api_starter.entities.User;
@@ -25,6 +26,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final JwtConfig jwtConfig;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -47,7 +49,7 @@ public class AuthController {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(604800);
+        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new JwtResponse(accessToken));
