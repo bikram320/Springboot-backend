@@ -1,6 +1,7 @@
 package com.example.spring_api_starter.services;
 
 import com.example.spring_api_starter.config.JwtConfig;
+import com.example.spring_api_starter.entities.Role;
 import com.example.spring_api_starter.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -60,5 +61,8 @@ public class JwtService {
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid token subject: not a numeric user ID", e);
         }
+    }
+    public Role getRoleByToken(String token) {
+        return Role.valueOf(getClaims(token).get("role", String.class));
     }
 }
