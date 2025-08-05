@@ -17,35 +17,37 @@ public class JwtService {
 
     private final JwtConfig jwtConfig;
 
-    public String generateAccessToken(User user) {
+    public Jwt generateAccessToken(User user) {
 
         return generateToken(user, jwtConfig.getAccessTokenExpiration());
     }
-    public String generateRefreshToken(User user) {
+    public Jwt generateRefreshToken(User user) {
         return generateToken(user,jwtConfig.getRefreshTokenExpiration());
     }
 
-    private String generateToken(User user , long tokenExpiration) {
-        return Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim("email", user.getEmail())
-                .claim("name", user.getName())
-                .claim("role", user.getRole())
+    private Jwt generateToken(User user , long tokenExpiration) {
+
+        var claims = Jwts.claims()
+                .subject(user.getId().toString())
+                .add("email", user.getEmail())
+                .add("name", user.getName())
+                .add("role", user.getRole())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
-                .signWith(jwtConfig.getSecretKey())
-                .compact();
+                .build();
+
+        return new Jwt(claims, jwtConfig.getSecretKey());
     }
 
-    public boolean validateToken(String token) {
+    public Jwt parseToken(String token) {
         try {
             var claims = getClaims(token);
-            return claims.getExpiration().after(new Date());
-
-        }catch(JwtException e){
-            return false;
+            return new Jwt(claims, jwtConfig.getSecretKey());
+        }catch (JwtException e){
+            return null;
         }
     }
+
 
     public Claims getClaims(String token) {
         return Jwts.parser()
@@ -55,14 +57,4 @@ public class JwtService {
                 .getPayload();
     }
 
-    public Long getUserIdByToken(String token) {
-        try {
-            return Long.valueOf(getClaims(token).getSubject());
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Invalid token subject: not a numeric user ID", e);
-        }
-    }
-    public Role getRoleByToken(String token) {
-        return Role.valueOf(getClaims(token).get("role", String.class));
-    }
 }

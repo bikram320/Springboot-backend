@@ -31,6 +31,7 @@ public class UserService  implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordConfig passwordConfig;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -89,13 +90,16 @@ public class UserService  implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public void changePassword(Long id , ChangeUserPasswordRequest request){
+    public void changePassword(Long id, ChangeUserPasswordRequest request) {
         var user = userRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("User not found by given data :"+id));
-        if(!user.getPassword().equals(request.getOldPassword())){
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by given data: " + id));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new InputMismatchException("Old password does not match");
         }
-        user.setPassword(request.getNewPassword());
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
+
 }
