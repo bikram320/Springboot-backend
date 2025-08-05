@@ -1,6 +1,7 @@
 package com.example.spring_api_starter.config;
 
 import com.example.spring_api_starter.filters.JwtAuthenticationFilter;
+import io.jsonwebtoken.security.Password;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,14 +26,12 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final PasswordConfig passwordConfig;
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         var provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordConfig.passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }

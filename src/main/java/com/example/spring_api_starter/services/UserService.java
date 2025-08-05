@@ -1,9 +1,11 @@
 package com.example.spring_api_starter.services;
 
+import com.example.spring_api_starter.config.PasswordConfig;
 import com.example.spring_api_starter.dtos.ChangeUserPasswordRequest;
 import com.example.spring_api_starter.dtos.RegisterUserRequest;
 import com.example.spring_api_starter.dtos.UpdateUserRequest;
 import com.example.spring_api_starter.dtos.UserDto;
+import com.example.spring_api_starter.entities.Role;
 import com.example.spring_api_starter.exceptions.DuplicateDataException;
 import com.example.spring_api_starter.exceptions.ResourceNotFoundException;
 import com.example.spring_api_starter.mapper.UserMapper;
@@ -28,7 +30,7 @@ public class UserService  implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-//    private final @Lazy PasswordEncoder passwordEncoder;
+    private final PasswordConfig passwordConfig;
 
 
     @Override
@@ -65,7 +67,8 @@ public class UserService  implements UserDetailsService {
 
 
         var newUser = userMapper.toUser(request);
-//        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        newUser.setPassword(passwordConfig.passwordEncoder().encode(newUser.getPassword()));
+        newUser.setRole(Role.USER);
         userRepository.save(newUser);
 
         return userMapper.toUserDto(newUser);
